@@ -16,7 +16,13 @@ public:
   double altAuto = 0.;
   double aziAuto = 0.;
 
+  MyAstro &astro;
+
 public:
+  NexstarControl(MyAstro &_astro) : astro(_astro)
+  {
+  }
+
   virtual boolean isGpsLinked() = 0;
   virtual boolean isGotoInProgress() = 0;
   virtual boolean isAligned() = 0;
@@ -39,7 +45,6 @@ class NexstarProtocol
 public:
   uint8_t buffer[64];
   NexstarControl &telescope;
-  MyAstro &myAstro;
   Stream &comm;
 
 public:
@@ -151,8 +156,8 @@ private:
           telescope.updateChassis();
           // unsigned long ra = map(telescope.getAlt(),-90.,90.,0.,65536.);
           // unsigned long dec = map(telescope.getAzimuth(), -180., 180., 0., 65536.);
-          unsigned long ra = (myAstro.getRAdec() / 24.) * 65536.;
-          unsigned long dec = (myAstro.getDeclinationDec() / 360.) * 65536.;
+          unsigned long ra = (telescope.astro.getRAdec() / 24.) * 65536.;
+          unsigned long dec = (telescope.astro.getDeclinationDec() / 360.) * 65536.;
           respondHex(ra >> 8 & 0xff);
           respondHex(ra & 0xff);
           comm.write(',');
@@ -168,8 +173,8 @@ private:
         {
           telescope.updateChassis();
 
-          double dra = myAstro.getRAdec();
-          double ddec = myAstro.getDeclinationDec();
+          double dra = telescope.astro.getRAdec();
+          double ddec = telescope.astro.getDeclinationDec();
           unsigned long ra = (dra / 24.) * (65536. * 256);
           unsigned long dec = (ddec / 360.) * (65536. * 256);
           // DEBUG2(ra, HEX);
@@ -208,8 +213,8 @@ private:
         {
           // telescope.setAstroTime();
           telescope.updateChassis();
-          long alt = map(myAstro.getAltitude(), -90, 90, 0, 65536);
-          long azi = map(myAstro.getAzimuth(), -180, 180, 0, 65536);
+          long alt = map(telescope.astro.getAltitude(), -90, 90, 0, 65536);
+          long azi = map(telescope.astro.getAzimuth(), -180, 180, 0, 65536);
           respondHex(alt >> 8 & 0xff);
           respondHex(alt & 0xff);
           comm.write(',');
@@ -225,8 +230,8 @@ private:
         {
           // telescope.setAstroTime();
           telescope.updateChassis();
-          unsigned long alt = (unsigned long)((dMap(myAstro.getAltitude(), -90., 90., 0., 65536.) * 256.));
-          unsigned long azi = (unsigned long)((dMap(myAstro.getAzimuth(), -180., 180., 0., 65536.) * 256.));
+          unsigned long alt = (unsigned long)((dMap(telescope.astro.getAltitude(), -90., 90., 0., 65536.) * 256.));
+          unsigned long azi = (unsigned long)((dMap(telescope.astro.getAzimuth(), -180., 180., 0., 65536.) * 256.));
           respondHex((alt >> 16) & 0xff); // only the upper 24 bits are in use
           respondHex((alt >> 8) & 0xff);
           respondHex((alt)&0xff);
@@ -516,7 +521,7 @@ private:
     case 'h': // Get Time
       if (cnt == 1)
       {
-        time_t t = myAstro.getCurrentTime();
+        time_t t = telescope.astro.getCurrentTime();
         DEBUG("Current time is ");
         DEBUG2(t, DEC);
         DEBUG(" relative: ");
@@ -556,7 +561,7 @@ private:
           t -= 1 * 60 * 60;
         }
         t -= GMToffset * 60 * 60; // plus GMToffset hours;
-        myAstro.setCurrentTime(t);
+        telescope.astro.setCurrentTime(t);
         return respond();
       }
       break;
@@ -583,8 +588,8 @@ private:
       if (cnt == 1)
       {
         // chr(A) &chr(B) &chr(C) &chr(D) &chr(E) &chr(F) &chr(G) &chr(H) &“#”
-        double wgsLat = myAstro.getLatDec();  // is in degrees
-        double wgsLon = myAstro.getLongDec(); // is in degrees
+        double wgsLat = telescope.astro.getLatDec();  // is in degrees
+        double wgsLon = telescope.astro.getLongDec(); // is in degrees
         // DEBUG4LN("GetLocation=",wgsLat,wgsLon, DEC);
         return respond(
             ((uint8_t)(abs(wgsLat))), ((uint8_t)((int)(wgsLat * 60) % 60)), ((uint8_t)((int)(wgsLat * 60 * 60) % 60)), wgsLat < 0 ? 1 : 0,
@@ -608,7 +613,7 @@ private:
           wgsLat *= -1;
         }
         // DEBUG4LN("SetLocation:",wgsLat,wgsLon,6);
-        myAstro.setLatLong(wgsLat, wgsLon);
+        telescope.astro.setLatLong(wgsLat, wgsLon);
         return respond();
       }
       break;
@@ -632,7 +637,7 @@ private:
       {
         // Get Latitude ((x*65536)+(y*256)+z)/(2^24) is a fraction of a rotation. To convert to degrees, multiply by 360.
         // chr(x) & chr(y) & chr(z) &“#”
-        double wgsLat = myAstro.getLatDec(); // is in degrees
+        double wgsLat = telescope.astro.getLatDec(); // is in degrees
         uint32_t xyz = ((1L << 24) / 360) * wgsLat;
         uint8_t x = xyz >> 16;
         uint8_t y = xyz >> 8;
@@ -643,7 +648,7 @@ private:
       {
         // Get Longitude ((x*65536)+(y*256)+z)/(2^24) is a fraction of a rotation. To convert to degrees, multiply by 360.
         // chr(x) & chr(y) & chr(z) &“#”
-        double wgsLon = myAstro.getLongDec(); // is in degrees
+        double wgsLon = telescope.astro.getLongDec(); // is in degrees
         uint32_t xyz = ((1L << 24) / 360) * wgsLon;
         uint8_t x = xyz >> 16;
         uint8_t y = xyz >> 8;
@@ -654,21 +659,21 @@ private:
       {
         // Get Date x is month (1-12) y is day (1-31)
         // chr(x) & chr(y) & “#”
-        time_t t = myAstro.getCurrentTime();
+        time_t t = telescope.astro.getCurrentTime();
         return respond(month(t), day(t));
       }
       if (buffer[3] == 4 && buffer[4] == 0 && buffer[5] == 0 && buffer[6] == 0 && buffer[7] == 2)
       {
         // Get Year (x * 256) + y = year
         // chr(x) & chr(y) & “#”
-        time_t t = myAstro.getCurrentTime();
+        time_t t = telescope.astro.getCurrentTime();
         return respond(year(t) / 256, year(t) % 256);
       }
       if (buffer[3] == 51 && buffer[4] == 0 && buffer[5] == 0 && buffer[6] == 0 && buffer[7] == 3)
       {
         // Get Time  x is the hours y is the minutes z is the seconds
         // chr(x) & chr(y) & chr(z) &“#”
-        time_t t = myAstro.getCurrentTime();
+        time_t t = telescope.astro.getCurrentTime();
         return respond(hour(t), minute(t), second(t));
       }
     }
@@ -822,7 +827,7 @@ private:
   }
 
 public:
-  NexstarProtocol(NexstarControl &tel, MyAstro &_myAstro, Stream &comm) : telescope(tel), myAstro(_myAstro), comm(comm)
+  NexstarProtocol(NexstarControl &tel, Stream &comm) : telescope(tel), comm(comm)
   {
     reset();
   }

@@ -129,21 +129,21 @@ void TellyMain::slowTick()
         case 'l':
             // print GPS location
             DEBUG("Location WgsLatLon=");
-            DEBUG2(astro.getLatDec(), 6);
+            DEBUG2(telescope.astro.getLatDec(), 6);
             DEBUG(":");
-            DEBUG2(astro.getLongDec(), 6);
+            DEBUG2(telescope.astro.getLongDec(), 6);
             DEBUGLN();
             break;
         case 'p':
             // print target position
             DEBUG("Pointing to Alt/Azi/Ra/Dec=");
-            DEBUG2(astro.getAltitude(), 6);
+            DEBUG2(telescope.astro.getAltitude(), 6);
             DEBUG(":");
-            DEBUG2(astro.getAzimuth(), 6);
+            DEBUG2(telescope.astro.getAzimuth(), 6);
             DEBUG(", ");
-            DEBUG2(astro.getRAdec(), 6);
+            DEBUG2(telescope.astro.getRAdec(), 6);
             DEBUG(":");
-            DEBUG2(astro.getDeclinationDec(), 6);
+            DEBUG2(telescope.astro.getDeclinationDec(), 6);
             DEBUGLN();
             break;
         case 's':
@@ -180,10 +180,10 @@ void TellyMain::slowTick()
             DEBUG2LN(TILT(), 2);
 #endif // __ACCEL
 
-            DEBUG4(" y m d h m s ", year(astro.getCurrentTime()), month(astro.getCurrentTime()), DEC);
-            DEBUG4(",", day(astro.getCurrentTime()), hour(astro.getCurrentTime()), DEC);
-            DEBUG4(",", minute(astro.getCurrentTime()), second(astro.getCurrentTime()), DEC);
-            DEBUG3(" sid ", astro.getLocalSiderealTime(), 6);
+            DEBUG4(" y m d h m s ", year(telescope.astro.getCurrentTime()), month(telescope.astro.getCurrentTime()), DEC);
+            DEBUG4(",", day(telescope.astro.getCurrentTime()), hour(telescope.astro.getCurrentTime()), DEC);
+            DEBUG4(",", minute(telescope.astro.getCurrentTime()), second(telescope.astro.getCurrentTime()), DEC);
+            DEBUG3(" sid ", telescope.astro.getLocalSiderealTime(), 6);
 
             DEBUGLN();
 
@@ -297,14 +297,8 @@ void TellyMain::slowTick()
 
 void TellyMain::initializeTelescope()
 {
-#ifdef _DEBUG
-    // saveLatLonToEEPROM(47.5, 19.1);
-#endif
-    // read stored latitude and longitude
-    astro.setLatLong(readLatFromEEPROM(), readLonFromEEPROM());
-
-    double alt = astro.getAltitude();
-    double azi = astro.getAzimuth();
+    double alt = telescope.astro.getAltitude();
+    double azi = telescope.astro.getAzimuth();
 #ifdef __ACCEL
     DEBUG3("Initial tilt:", getTilt(), 4);
     alt = TILT();
@@ -322,10 +316,10 @@ void TellyMain::initializeTelescope()
     // can not set time without GPS
 #endif // __GPS
 
-    astro.applyAltAz(alt, azi);
+    telescope.astro.applyAltAz(alt, azi);
     chassis.syncAltAzi(alt, azi);
-    DEBUG4("Alt/Azi:", astro.getAltitude(), astro.getAzimuth(), 4);
-    DEBUG4LN("RA/Dec:", astro.getRAdec(), astro.getDeclinationDec(), 4);
+    DEBUG4("Alt/Azi:", telescope.astro.getAltitude(), telescope.astro.getAzimuth(), 4);
+    DEBUG4LN("RA/Dec:", telescope.astro.getRAdec(), telescope.astro.getDeclinationDec(), 4);
 
     if (handwheel.initialAziButton == 0)
     {
@@ -385,7 +379,7 @@ void TellyMain::initializeTelescope()
         // calculate alt and azi
         DEBUGLN("Going to north");
 #ifdef __MAGNETO
-        double alt = 90 - astro.getLatDec();
+        double alt = 90 - telescope.astro.getLatDec();
         DEBUG4LN("North is:", alt, 0., 4);
         chassis.gotoAltAzi(alt, 0);
 #endif

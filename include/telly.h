@@ -28,13 +28,12 @@ public:
     TellyState actualState = Uninitialized;
 
     MyChassis &chassis;
-    MyAstro astro;
     TelescopeControl telescope;
     Handwheel &handwheel;
     NexstarProtocol protocol;
 
 public:
-    TellyMain(MyChassis &_chassis, Handwheel &_hwheel) : chassis(_chassis), telescope(astro, _chassis), handwheel(_hwheel), protocol(telescope, astro, Serial3)
+    TellyMain(MyChassis &_chassis, Handwheel &_hwheel) : chassis(_chassis), telescope(_chassis), handwheel(_hwheel), protocol(telescope, Serial3)
     {
     }
 

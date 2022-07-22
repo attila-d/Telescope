@@ -2,10 +2,11 @@
 
 #include <Arduino.h>
 
+#include "debug.h"
 #include "astro.h"
 #include "chassis.h"
 #include "nexstar.h"
-#include "debug.h"
+#include "loadsave.h"
 
 /**
  * coordinated control of telescope
@@ -28,11 +29,11 @@ class TelescopeControl : public NexstarControl
     bool gotoInProgress = false;
 
 public:
-    MyAstro &astro;
+    MyAstro astro;
     MyChassis &myChassis;
 
 public:
-    TelescopeControl(MyAstro &_myAstro, MyChassis &_myChassis) : astro(_myAstro), myChassis(_myChassis)
+    TelescopeControl(MyChassis &_myChassis) : NexstarControl(astro), myChassis(_myChassis)
     {
         // bool b = begin();
         // DEBUG("Astro inited:");
@@ -45,6 +46,12 @@ public:
         // if( b ) {
         //     DEBUGLN("Astro TRUE");
         // }
+
+#ifdef _DEBUG
+        // saveLatLonToEEPROM(47.5, 19.1);
+#endif
+        // read stored latitude and longitude
+        astro.setLatLong(readLatFromEEPROM(), readLonFromEEPROM());
     }
 
 public:
