@@ -30,10 +30,10 @@ class TelescopeControl : public NexstarControl
 
 public:
     MyAstro astro;
-    MyChassis &myChassis;
+    MyChassis &chassis;
 
 public:
-    TelescopeControl(MyChassis &_myChassis) : NexstarControl(astro), myChassis(_myChassis)
+    TelescopeControl(MyChassis &_myChassis) : NexstarControl(astro), chassis(_myChassis)
     {
         // bool b = begin();
         // DEBUG("Astro inited:");
@@ -62,7 +62,7 @@ public:
      */
     void updateChassis()
     {
-        astro.applyAltAz(myChassis.getAltCurrent(), myChassis.getAziCurrent());
+        astro.applyAltAz(chassis.getAltCurrent(), chassis.getAziCurrent());
         // doAltAz2RAdec();
     }
 
@@ -88,7 +88,7 @@ public:
         return 0;
     }
 
-    inline bool isGotoInProgress() { return myChassis.isGoToInProgress(); }
+    inline bool isGotoInProgress() { return chassis.isGoToInProgress(); }
     inline bool isAligned() { return aligned; }
 
     void gotoAltAzi(double alt, double azi)
@@ -98,7 +98,7 @@ public:
         astro.applyAltAz(alt, azi);
         // doAltAz2RAdec();
         DEBUG4LN("GO TO ALT/AZI:", alt, azi, 4);
-        myChassis.gotoAltAzi(astro.getAltitude(), astro.getAzimuth());
+        chassis.gotoAltAzi(astro.getAltitude(), astro.getAzimuth());
     }
 
     void gotoRaDec(double ra, double dec)
@@ -109,7 +109,7 @@ public:
         // doRAdec2AltAz();
         DEBUG4("GO TO RA/DEC:", ra, dec, 4);
         DEBUG4LN(" Alt=", astro.getAltitude(), astro.getAzimuth(), 4);
-        myChassis.gotoAltAzi(astro.getAltitude(), astro.getAzimuth());
+        chassis.gotoAltAzi(astro.getAltitude(), astro.getAzimuth());
     }
 
     void syncCurrentPosToRaDec(double ra, double dec)
@@ -122,7 +122,7 @@ public:
         DEBUG3(",Dec=", astro.getDeclinationDec(), 4);
         DEBUG3(",Alt=:", astro.getAltitude(), 4);
         DEBUG3LN(",Azi=", astro.getAzimuth(), 4);
-        myChassis.syncAltAzi(astro.getAltitude(), astro.getAzimuth());
+        chassis.syncAltAzi(astro.getAltitude(), astro.getAzimuth());
         trackDEC = dec;
         trackRA = ra;
         aligned = true;
