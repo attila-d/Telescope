@@ -28,12 +28,6 @@ bool Handwheel::isAltPressed()
 
 void Handwheel::setup()
 {
-    // btnAzi.tick();
-    // btnAlt.tick();
-
-    // initialAziButton = btnAzi.getPressedTicks() > 0;
-    // initialAltButton = btnAlt.getPressedTicks() > 0;
-
     initialAziButton = isAziPressed();
     initialAltButton = isAltPressed();
 }

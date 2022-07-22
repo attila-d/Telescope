@@ -3,6 +3,9 @@
 #include <OneButton.h>
 #include <RotaryEncoder.h>
 
+#include "debug.h"
+#include "util.h"
+
 #include "chassis.h"
 #include "compass.h"
 #include "handwheel.h"
@@ -10,7 +13,6 @@
 #include "loadsave.h"
 #include "telescope.h"
 #include "tilt.h"
-#include "util.h"
 // #include "gps.h"
 #include "bt.h"
 #include "telly.h"

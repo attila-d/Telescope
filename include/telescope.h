@@ -7,23 +7,14 @@
 #include "nexstar.h"
 #include "debug.h"
 
+/**
+ * coordinated control of telescope
+ *
+ *
+ */
 class TelescopeControl : public NexstarControl
 {
-
-private:
-    /**
-     * deg, -90 to 90, not minutes but fraction of degrees
-     */
-    // double altitude = 45;
-    /**
-     * deg, -180 to 180, not minutes but fraction of degrees from north
-     */
-    // double azimuth = 16;
-
-    // GPS position, location on Earth
-    // double wgsLon = 19.1;
-    // double wgsLat = 47.5;
-public:
+    // public:
     unsigned long timeBase; // at the moment of millis() == 0
 
     bool _tracking = false;
@@ -35,12 +26,13 @@ public:
     double targetAltitude = 0;
 
     bool gotoInProgress = false;
+
 public:
-    MyAstro &myAstro;
+    MyAstro &astro;
     MyChassis &myChassis;
 
 public:
-    TelescopeControl(MyAstro &_myAstro, MyChassis &_myChassis) : myAstro(_myAstro), myChassis(_myChassis)
+    TelescopeControl(MyAstro &_myAstro, MyChassis &_myChassis) : astro(_myAstro), myChassis(_myChassis)
     {
         // bool b = begin();
         // DEBUG("Astro inited:");
@@ -58,12 +50,12 @@ public:
 public:
     /**
      * @brief updates astro position from chassis data
-     * 
+     *
      * Takes chassis setting and applies to astro position
      */
     void updateChassis()
     {
-        myAstro.applyAltAz(myChassis.getAltCurrent(), myChassis.getAziCurrent());
+        astro.applyAltAz(myChassis.getAltCurrent(), myChassis.getAziCurrent());
         // doAltAz2RAdec();
     }
 
@@ -96,34 +88,34 @@ public:
     {
         // altitude = alt;
         // azimuth = azi;
-        myAstro.applyAltAz(alt, azi);
+        astro.applyAltAz(alt, azi);
         // doAltAz2RAdec();
         DEBUG4LN("GO TO ALT/AZI:", alt, azi, 4);
-        myChassis.gotoAltAzi(myAstro.getAltitude(), myAstro.getAzimuth());
+        myChassis.gotoAltAzi(astro.getAltitude(), astro.getAzimuth());
     }
 
     void gotoRaDec(double ra, double dec)
     {
-        myAstro.applyRAdec(ra, dec);
+        astro.applyRAdec(ra, dec);
         trackDEC = dec;
         trackRA = ra;
         // doRAdec2AltAz();
         DEBUG4("GO TO RA/DEC:", ra, dec, 4);
-        DEBUG4LN(" Alt=", myAstro.getAltitude(), myAstro.getAzimuth(), 4);
-        myChassis.gotoAltAzi(myAstro.getAltitude(), myAstro.getAzimuth());
+        DEBUG4LN(" Alt=", astro.getAltitude(), astro.getAzimuth(), 4);
+        myChassis.gotoAltAzi(astro.getAltitude(), astro.getAzimuth());
     }
 
     void syncCurrentPosToRaDec(double ra, double dec)
     {
         DEBUG3("Sync:RA=", ra, 4);
         DEBUG3(",DEC=", dec, 4);
-        myAstro.applyRAdec(ra, dec);
+        astro.applyRAdec(ra, dec);
         // doRAdec2AltAz();
-        DEBUG3(",RA=:", myAstro.getRAdec(), 4);
-        DEBUG3(",Dec=", myAstro.getDeclinationDec(), 4);
-        DEBUG3(",Alt=:", myAstro.getAltitude(), 4);
-        DEBUG3LN(",Azi=", myAstro.getAzimuth(), 4);
-        myChassis.syncAltAzi(myAstro.getAltitude(), myAstro.getAzimuth());
+        DEBUG3(",RA=:", astro.getRAdec(), 4);
+        DEBUG3(",Dec=", astro.getDeclinationDec(), 4);
+        DEBUG3(",Alt=:", astro.getAltitude(), 4);
+        DEBUG3LN(",Azi=", astro.getAzimuth(), 4);
+        myChassis.syncAltAzi(astro.getAltitude(), astro.getAzimuth());
         trackDEC = dec;
         trackRA = ra;
         aligned = true;
@@ -160,7 +152,7 @@ public:
             {
                 const double autoRate = 0.1;
                 const double slewRate = 0.1;
-                gotoAltAzi(myAstro.getAltitude() + autoRate * altAuto + slewRate * altSlew, myAstro.getAzimuth() + autoRate * aziAuto + slewRate * aziSlew);
+                gotoAltAzi(astro.getAltitude() + autoRate * altAuto + slewRate * altSlew, astro.getAzimuth() + autoRate * aziAuto + slewRate * aziSlew);
             }
         }
     }
@@ -175,8 +167,8 @@ public:
         if (!_tracking && bOn)
         {
             // save RA and DEC
-            trackRA = myAstro.getRAdec();
-            trackDEC = myAstro.getDeclinationDec();
+            trackRA = astro.getRAdec();
+            trackDEC = astro.getDeclinationDec();
         }
         _tracking = bOn;
         DEBUG("Tracking:");
