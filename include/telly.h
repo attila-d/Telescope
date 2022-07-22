@@ -45,8 +45,6 @@ public:
     bool gpsFix = false;
 #endif
 
-    void initializeTelescope();
-    void slowTick();
-
     void setup();
+    void tick();
 };

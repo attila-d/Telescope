@@ -58,10 +58,111 @@ void TellyMain::setup()
     initMPU9250();
 #endif
 
-    initializeTelescope();
+    double alt = telescope.astro.getAltitude();
+    double azi = telescope.astro.getAzimuth();
+#ifdef __ACCEL
+    DEBUG3("Initial tilt:", getTilt(), 4);
+    alt = TILT();
+    DEBUG3LN("\tReal tilt:", alt, 6);
+#endif
+#ifdef __MAGNETO
+    tickMPU9250();
+    // azi = lRange(360-NORTH(), 0, 360);
+    azi = NORTH();
+    DEBUG3LN("North=", azi, 4);
+#endif // __MAGNETO
+#ifdef __GPS
+    // TODO: Wait for GPS fix?
+    // Read Lat/Lon from previous run (EEPROM)
+    // can not set time without GPS
+#endif // __GPS
+
+    telescope.astro.applyAltAz(alt, azi);
+    chassis.syncAltAzi(alt, azi);
+    DEBUG4("Alt/Azi:", telescope.astro.getAltitude(), telescope.astro.getAzimuth(), 4);
+    DEBUG4LN("RA/Dec:", telescope.astro.getRAdec(), telescope.astro.getDeclinationDec(), 4);
+
+    if (handwheel.initialAziButton == 0)
+    {
+        if (handwheel.initialAltButton == 0)
+        {
+            // both button pressed
+            DEBUGLN("Calibrating magnetometer");
+// calibrate magnetometer
+#ifdef __MAGNETO
+            actualState = Calibration;
+#endif // __MAGNETO
+        }
+        else
+        {
+            DEBUGLN("To the top");
+#ifdef __ACCEL
+            actualState = MovingToTop;
+#endif // __MAGNETO
+        }
+    }
+    else
+    {
+        if (handwheel.initialAltButton == 0)
+        {
+            DEBUGLN("Move to north pole");
+#ifdef __MAGNETO
+#ifdef __ACCEL
+            actualState = MovingToNorthPole;
+#endif // __ACCEL
+#endif // __MAGNETO
+        }
+        else
+        {
+            actualState = Normal;
+        }
+    }
+
+    switch (actualState)
+    {
+    case TellyState::Normal:
+        /* code */
+        DEBUGLN("Starting normal operation");
+        // stepAzi.move( (aziMax - aziMin) );   // test 360 rotation
+        break;
+    case TellyState::MovingToTop:
+    {
+        DEBUGLN("Going to top");
+#ifdef __ACCEL
+        DEBUG4LN("Top is:", alt, chassis.getAziCurrent(), 4);
+        chassis.gotoAltAzi(90, chassis.getAziCurrent());
+#endif
+        actualState = Normal;
+    }
+    break;
+    case TellyState::MovingToNorthPole:
+    {
+        // calculate alt and azi
+        DEBUGLN("Going to north");
+#ifdef __MAGNETO
+        double alt = 90 - telescope.astro.getLatDec();
+        DEBUG4LN("North is:", alt, 0., 4);
+        chassis.gotoAltAzi(alt, 0);
+#endif
+        actualState = Normal;
+    }
+    break;
+    case TellyState::Calibration:
+    {
+#ifdef __MAGNETO
+        // stepAlt.moveTo(altMax-altStepOffset);
+        chassis.stepAzi.move((aziMax - aziMin) * 1.1);
+        beginMagCalibration();
+#endif
+    }
+    break;
+
+    default:
+        break;
+    }
 }
 
-void TellyMain::slowTick()
+void TellyMain::tick()
 {
     handwheel.tick();
 
@@ -293,110 +394,4 @@ void TellyMain::slowTick()
     }
 
     telescope.tick();
-}
-
-void TellyMain::initializeTelescope()
-{
-    double alt = telescope.astro.getAltitude();
-    double azi = telescope.astro.getAzimuth();
-#ifdef __ACCEL
-    DEBUG3("Initial tilt:", getTilt(), 4);
-    alt = TILT();
-    DEBUG3LN("\tReal tilt:", alt, 6);
-#endif
-#ifdef __MAGNETO
-    tickMPU9250();
-    // azi = lRange(360-NORTH(), 0, 360);
-    azi = NORTH();
-    DEBUG3LN("North=", azi, 4);
-#endif // __MAGNETO
-#ifdef __GPS
-    // TODO: Wait for GPS fix?
-    // Read Lat/Lon from previous run (EEPROM)
-    // can not set time without GPS
-#endif // __GPS
-
-    telescope.astro.applyAltAz(alt, azi);
-    chassis.syncAltAzi(alt, azi);
-    DEBUG4("Alt/Azi:", telescope.astro.getAltitude(), telescope.astro.getAzimuth(), 4);
-    DEBUG4LN("RA/Dec:", telescope.astro.getRAdec(), telescope.astro.getDeclinationDec(), 4);
-
-    if (handwheel.initialAziButton == 0)
-    {
-        if (handwheel.initialAltButton == 0)
-        {
-            // both button pressed
-            DEBUGLN("Calibrating magnetometer");
-// calibrate magnetometer
-#ifdef __MAGNETO
-            actualState = Calibration;
-#endif // __MAGNETO
-        }
-        else
-        {
-            DEBUGLN("To the top");
-#ifdef __ACCEL
-            actualState = MovingToTop;
-#endif // __MAGNETO
-        }
-    }
-    else
-    {
-        if (handwheel.initialAltButton == 0)
-        {
-            DEBUGLN("Move to north pole");
-#ifdef __MAGNETO
-#ifdef __ACCEL
-            actualState = MovingToNorthPole;
-#endif // __ACCEL
-#endif // __MAGNETO
-        }
-        else
-        {
-            actualState = Normal;
-        }
-    }
-
-    switch (actualState)
-    {
-    case TellyState::Normal:
-        /* code */
-        DEBUGLN("Starting normal operation");
-        // stepAzi.move( (aziMax - aziMin) );   // test 360 rotation
-        break;
-    case TellyState::MovingToTop:
-    {
-        DEBUGLN("Going to top");
-#ifdef __ACCEL
-        DEBUG4LN("Top is:", alt, chassis.getAziCurrent(), 4);
-        chassis.gotoAltAzi(90, chassis.getAziCurrent());
-#endif
-        actualState = Normal;
-    }
-    break;
-    case TellyState::MovingToNorthPole:
-    {
-        // calculate alt and azi
-        DEBUGLN("Going to north");
-#ifdef __MAGNETO
-        double alt = 90 - telescope.astro.getLatDec();
-        DEBUG4LN("North is:", alt, 0., 4);
-        chassis.gotoAltAzi(alt, 0);
-#endif
-        actualState = Normal;
-    }
-    break;
-    case TellyState::Calibration:
-    {
-#ifdef __MAGNETO
-        // stepAlt.moveTo(altMax-altStepOffset);
-        chassis.stepAzi.move((aziMax - aziMin) * 1.1);
-        beginMagCalibration();
-#endif
-    }
-    break;
-
-    default:
-        break;
-    }
 }

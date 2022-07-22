@@ -132,6 +132,6 @@ void loop()
         lastSlowInterval = lastTime;
         // blinking led
         digitalWrite(LED_BUILTIN, lastTime & 0x100 ? 0 : 1);
-        telly.slowTick();
+        telly.tick();
     }
 }
