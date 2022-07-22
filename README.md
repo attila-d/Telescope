@@ -1,14 +1,17 @@
 # Motorized Alt-Azimuth telescope
 
+I built a Newtonian/Dobsonian 8" telescope, with some extra features: two stepper motors can move its altitude and azimuth direction. 
+It is controlled by an Arduino Mega2560 board, having two rotary knobs for immediate positioning, and connecting to Android/PC Stellarium software via Bluetooth, talking the Nexstar protocol. 
+
 ## Hardware
 
 Arduino Mega 2560
 
 2 Nema17 stepper motors, with approrpriate drivers (4988)
 
-Magnetometer
+Magnetometer - compass, for initial calibration to North pole
 
-Accelerometer ADXL345
+Accelerometer ADXL345 - tilt sensor
 
 (GPS support removed: Stellarium syncs position and current time when connection established)
 
