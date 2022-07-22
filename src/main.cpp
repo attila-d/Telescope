@@ -1,7 +1,8 @@
 #include "main.h"
 
-#include <AccelStepper.h>
 #include <Arduino.h>
+
+#include <AccelStepper.h>
 #include <OneButton.h>
 #include <RotaryEncoder.h>
 
@@ -9,7 +10,7 @@
 #include "compass.h"
 #include "handwheel.h"
 #include "nexstar.h"
-#include "telescopectrl.h"
+#include "telescope.h"
 #include "tilt.h"
 #include "util.h"
 // #include "gps.h"

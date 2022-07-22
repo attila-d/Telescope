@@ -19,6 +19,7 @@
 
 class MyChassis
 {
+public:
     AccelStepper &stepAlt;
     AccelStepper &stepAzi;
 
@@ -61,5 +62,33 @@ public:
     {
         stepAlt.run();
         stepAzi.run();
+    }
+
+    void stop()
+    {
+        stopAlt();
+        stopAzi();
+    }
+
+    void stopAlt()
+    {
+        stepAlt.stop();
+        stepAlt.setCurrentPosition(stepAlt.currentPosition());
+    }
+
+    void stopAzi()
+    {
+        stepAzi.stop();
+        stepAzi.setCurrentPosition(stepAzi.currentPosition());
+    }
+
+    bool isAtTargetAzi()
+    {
+        return stepAzi.currentPosition() == stepAzi.targetPosition();
+    }
+
+    bool isAtTargetAlt()
+    {
+        return stepAlt.currentPosition() == stepAlt.targetPosition();
     }
 };

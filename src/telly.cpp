@@ -8,28 +8,16 @@
 #include "handwheel.h"
 #include "nexstar.h"
 #include "loadsave.h"
-#include "telescopectrl.h"
+#include "telescope.h"
 #include "tilt.h"
 #include "util.h"
 // #include "gps.h"
 #include "bt.h"
 #include "telly.h"
 
-extern RotaryEncoder encAlt;
-extern RotaryEncoder encAzi;
-
-extern AccelStepper stepAlt;
-extern AccelStepper stepAzi;
-
-extern OneButton btnAlt;
-extern OneButton btnAzi;
-
 void TellyMain::stopMotion()
 {
-    stepAlt.stop();
-    stepAzi.stop();
-    stepAlt.setCurrentPosition(stepAlt.currentPosition());
-    stepAzi.setCurrentPosition(stepAzi.currentPosition());
+    chassis.stop();
     telescope.stopSlew();
     actualState = Normal;
 }
@@ -38,7 +26,7 @@ void TellyMain::startSpiral()
 {
     actualState = Spiral00;
     spiralFactor = 1.;
-    stepAlt.move(0.5 * stepSize * spiralFactor / 8);
+    chassis.stepAlt.move(0.5 * stepSize * spiralFactor / 8);
 }
 
 void TellyMain::setup()
@@ -73,11 +61,6 @@ void TellyMain::setup()
 
 void TellyMain::slowTick()
 {
-    btnAlt.tick();
-    btnAzi.tick();
-    encAlt.tick();
-    encAzi.tick();
-
     handwheel.tick();
 
 #ifdef __GPS
@@ -113,7 +96,7 @@ void TellyMain::slowTick()
         float tilt = TILT();
         if (tilt < 0)
         {
-            stepAlt.stop();
+            chassis.stopAlt();
             DEBUGLN("Stopping ALT motor");
         }
     }
@@ -127,14 +110,14 @@ void TellyMain::slowTick()
         {
         case 'a':
             // print step position
-            DEBUG3("Chassis AltAzi Step Pos=", stepAlt.currentPosition(), DEC);
-            DEBUG3(":", stepAzi.currentPosition(), DEC);
+            DEBUG3("Chassis AltAzi Step Pos=", chassis.stepAlt.currentPosition(), DEC);
+            DEBUG3(":", chassis.stepAzi.currentPosition(), DEC);
             DEBUG3("\tOffset=", chassis.altStepOffset, DEC);
             DEBUG3(":", chassis.aziStepOffset, DEC);
-            DEBUG3("\tRaw Pos=", stepAlt.currentPosition(), DEC);
-            DEBUG3(":", stepAzi.currentPosition(), DEC);
-            DEBUG3("\tTrg=", stepAlt.targetPosition(), DEC);
-            DEBUG3(":", stepAzi.targetPosition(), DEC);
+            DEBUG3("\tRaw Pos=", chassis.stepAlt.currentPosition(), DEC);
+            DEBUG3(":", chassis.stepAzi.currentPosition(), DEC);
+            DEBUG3("\tTrg=", chassis.stepAlt.targetPosition(), DEC);
+            DEBUG3(":", chassis.stepAzi.targetPosition(), DEC);
             DEBUG(attachHandwheel ? "\tAttached" : "\tDetached");
             DEBUG3("\tNormalized Pos=", chassis.getAltCurrent(), 4);
             DEBUG3(":", chassis.getAziCurrent(), 4);
@@ -250,7 +233,7 @@ void TellyMain::slowTick()
 #ifdef __MAGNETO
         // DEBUG4LN("Mag tick:",stepAzi.currentPosition(), stepAzi.targetPosition(), DEC)
         tickMagCalibration();
-        if (stepAzi.currentPosition() == stepAzi.targetPosition())
+        if (chassis.isAtTargetAzi())
         {
             // we got enough sampling data
             endMagCalibration();
@@ -261,37 +244,37 @@ void TellyMain::slowTick()
     }
     break;
     case Spiral00:
-        if (stepAlt.currentPosition() == stepAlt.targetPosition())
+        if (chassis.isAtTargetAlt())
         {
             actualState = Spiral01;
-            stepAzi.move(stepSize * spiralFactor / 8);
+            chassis.stepAzi.move(stepSize * spiralFactor / 8);
             // DEBUG3LN("Spiral01 Azi=",stepAzi.targetPosition(),DEC);
             spiralFactor += 0.25;
         }
         break;
     case Spiral01:
-        if (stepAzi.currentPosition() == stepAzi.targetPosition())
+        if (chassis.isAtTargetAzi())
         {
             actualState = Spiral11;
-            stepAlt.move(stepSize * spiralFactor / 8);
+            chassis.stepAlt.move(stepSize * spiralFactor / 8);
             // DEBUG3LN("Spiral11 Alt=",stepAlt.targetPosition(),DEC);
             spiralFactor += 0.25;
         }
         break;
     case Spiral11:
-        if (stepAlt.currentPosition() == stepAlt.targetPosition())
+        if (chassis.isAtTargetAlt())
         {
             actualState = Spiral10;
-            stepAzi.move(-stepSize * spiralFactor / 8);
+            chassis.stepAzi.move(-stepSize * spiralFactor / 8);
             // DEBUG3LN("Spiral10 Azi=",stepAzi.targetPosition(),DEC);
             spiralFactor += 0.25;
         }
         break;
     case Spiral10:
-        if (stepAzi.currentPosition() == stepAzi.targetPosition())
+        if (chassis.isAtTargetAzi())
         {
             actualState = Spiral00;
-            stepAlt.move(-stepSize * spiralFactor / 8);
+            chassis.stepAlt.move(-stepSize * spiralFactor / 8);
             // DEBUG3LN("Spiral00 Alt=",stepAlt.targetPosition(),DEC);
             spiralFactor += 0.25;
         }
@@ -411,7 +394,7 @@ void TellyMain::initializeTelescope()
     {
 #ifdef __MAGNETO
         // stepAlt.moveTo(altMax-altStepOffset);
-        stepAzi.move((aziMax - aziMin) * 1.1);
+        chassis.stepAzi.move((aziMax - aziMin) * 1.1);
         beginMagCalibration();
 #endif
     }

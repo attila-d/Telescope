@@ -5,7 +5,7 @@
 #include "astro.h"
 #include "nexstar.h"
 #include "handwheel.h"
-#include "telescopectrl.h"
+#include "telescope.h"
 
 enum TellyState
 {

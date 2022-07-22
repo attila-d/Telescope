@@ -40,6 +40,8 @@ void Handwheel::setup()
 
 void Handwheel::tick()
 {
+    encAlt.tick();
+    encAzi.tick();
     btnAzi.tick();
     btnAlt.tick();
 
