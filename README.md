@@ -19,6 +19,16 @@ I am standing on shoulders of giants: the celestial calculations are not my work
 - Chargeable battery 6*18650, power socket, power switch (ON-OFF)
 - Charge controller board (3S 25A for  18650 Lithium Battery Protection Board)
 
+Alt encoder pins: 45,47 + 44
+Azimuth encoder: 46, 48 + 49
+
+Alt stepper step pin 25, dir pin 23
+Azi stepper step pin 24, dir pin 22
+
+Bluetooth HC-05 is at Serial3 (RX3/TX3)
+
+ADXL345 && MPU9250 are connected to the default I2C port.
+
 ## Control
 
 ### ({Alt}|{Azi}) buttons
