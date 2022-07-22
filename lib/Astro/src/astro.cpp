@@ -3,87 +3,106 @@
 #include "Arduino.h"
 #include "math.h"
 
-
-time_t MyAstro::getCurrentTime() {
+time_t MyAstro::getCurrentTime()
+{
     unsigned long l = (millis() / 1000) - timeBase;
     // DEBUG("get current time:");
     // DEBUG2LN(l, DEC);
     return l;
 }
 
-void MyAstro::setCurrentTime(time_t currentTime) {
+void MyAstro::setCurrentTime(time_t currentTime)
+{
     // DEBUG("set current time:");
     // DEBUG2LN(currentTime, DEC);
     timeBase = millis() / 1000 - currentTime;
 }
 
-double MyAstro::inRange24(double d) {
-    while (d < 0.) {
+double MyAstro::inRange24(double d)
+{
+    while (d < 0.)
+    {
         d += 24.;
     }
-    while (d >= 24.) {
+    while (d >= 24.)
+    {
         d -= 24.;
     }
     return d;
 }
 
-double MyAstro::inRange360(double d) {
-    while (d < 0.) {
+double MyAstro::inRange360(double d)
+{
+    while (d < 0.)
+    {
         d += 360.;
     }
-    while (d >= 360.) {
+    while (d >= 360.)
+    {
         d -= 360.;
     }
     return d;
 }
 
-double MyAstro::inRange2PI(double d) {
-    while (d < 0.) {
+double MyAstro::inRange2PI(double d)
+{
+    while (d < 0.)
+    {
         d += F2PI;
     }
-    while (d >= F2PI) {
+    while (d >= F2PI)
+    {
         d -= F2PI;
     }
     return d;
 }
 
-double MyAstro::deg2rad(double n) {
+double MyAstro::deg2rad(double n)
+{
     return n * 1.745329252e-2;
 }
 
-double MyAstro::rad2deg(double n) {
+double MyAstro::rad2deg(double n)
+{
     return n * 5.729577951e1;
 }
 
-double MyAstro::getRAdec() {
+double MyAstro::getRAdec()
+{
     RAdec = rad2deg(RArad) / 15.;
     return RAdec;
 }
 
-double MyAstro::getDeclinationDec() {
+double MyAstro::getDeclinationDec()
+{
     DeclinationDec = rad2deg(DeclinationRad);
     return DeclinationDec;
 }
 
-double MyAstro::getAltitude() {
+double MyAstro::getAltitude()
+{
     AltDec = rad2deg(AltRad);
     return AltDec;
 }
 
-double MyAstro::getAzimuth() {
+double MyAstro::getAzimuth()
+{
     AzDec = rad2deg(AzRad);
     return AzDec;
 }
 
-double MyAstro::getLatDec() {
+double MyAstro::getLatDec()
+{
     return decLat;
 }
 
-double MyAstro::getLongDec() {
+double MyAstro::getLongDec()
+{
     return decLong;
 }
 
-double MyAstro::getLocalSiderealTime() {
+double MyAstro::getLocalSiderealTime()
+{
     time_t obstime = getCurrentTime();
     double d, t, GMST_s, LMST_s;
 
@@ -99,7 +118,8 @@ double MyAstro::getLocalSiderealTime() {
     /* adjust to LMST */
     LMST_s = GMST_s + 3600 * decLong / 15.;
 
-    if (LMST_s <= 0) { /* LMST is between 0 and 24h */
+    if (LMST_s <= 0)
+    { /* LMST is between 0 and 24h */
         LMST_s += 86400.0;
     }
 
@@ -107,11 +127,12 @@ double MyAstro::getLocalSiderealTime() {
     return LMST_s / 3600.;
 }
 
-bool MyAstro::setLatLong(double latitude, double longitude) {
+bool MyAstro::setLatLong(double latitude, double longitude)
+{
     // Input latitude and longitude are in decimal degrees
     // save these, and also save values in radians
     if (decLat == latitude && decLong == longitude)
-        return true;  //Already did it
+        return true; // Already did it
     decLat = latitude;
     radLat = deg2rad(decLat);
     decLong = longitude;
@@ -125,9 +146,10 @@ bool MyAstro::setLatLong(double latitude, double longitude) {
 /**
  * sets alt and azimuth for astro calculations. It also updates RA and Dec
  */
-bool MyAstro::applyAltAz(double Altitude, double Azimuth) {
+bool MyAstro::applyAltAz(double Altitude, double Azimuth)
+{
     if (AltDec == Altitude && AzDec == Azimuth)
-        return true;  //Already done
+        return true; // Already done
     AltDec = Altitude;
     AltRad = deg2rad(AltDec);
     sinAlt = sin(AltRad);
@@ -160,9 +182,10 @@ bool MyAstro::applyAltAz(double Altitude, double Azimuth) {
 /**
  * Sets RA and Dec, and updates and calculates Alt/Azimuth
  */
-bool MyAstro::applyRAdec(double RightAscension, double Declination) {
+bool MyAstro::applyRAdec(double RightAscension, double Declination)
+{
     if (RAdec == RightAscension && DeclinationDec == Declination)
-        return true;  //Already done
+        return true; // Already done
     RAdec = RightAscension;
     RArad = deg2rad(RAdec) * 15.;
     sinRA = sin(RArad);

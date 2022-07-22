@@ -5,6 +5,8 @@ It is controlled by an Arduino Mega2560 board, having two rotary knobs for immed
 
 ![alt text](http://url/to/img.png)
 
+I am standing on shoulders of giants: the celestial calculations are not my work, found them on the internet with licences not forbidding to reuse them. I'll add references to the original code. 
+
 ## Hardware
 
 - Arduino Mega 2560
@@ -74,3 +76,4 @@ __MAGNETO
 Bootstrap: 
 https://getbootstrap.com/docs/4.0/examples/checkout/
 
+Nexstar protocol is available at: https://docplayer.net/20889250-Nexstar-communication-protocol.html
