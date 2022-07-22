@@ -3,6 +3,8 @@
 I built a Newtonian/Dobsonian 8" telescope, with some extra features: two stepper motors can move its altitude and azimuth direction. 
 It is controlled by an Arduino Mega2560 board, having two rotary knobs for immediate positioning, and connecting to Android/PC Stellarium software via Bluetooth, talking the Nexstar protocol. 
 
+![alt text](http://url/to/img.png)
+
 ## Hardware
 
 - Arduino Mega 2560
@@ -12,7 +14,8 @@ It is controlled by an Arduino Mega2560 board, having two rotary knobs for immed
 - (GPS support removed: Stellarium syncs position and current time when connection established)
 - Bluetooth module HC-05
 - 2 rotary encoders with push button
-- Chargeable battery, power socket, power switch (ON-OFF)
+- Chargeable battery 6*18650, power socket, power switch (ON-OFF)
+- Charge controller board (3S 25A for  18650 Lithium Battery Protection Board)
 
 ## Control
 
