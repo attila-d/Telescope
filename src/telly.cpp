@@ -20,7 +20,7 @@
 void TellyMain::stopMotion()
 {
     chassis.stop();
-    telescope.stopSlew();
+    telescope.stFlew();
     actualState = Normal;
 }
 
@@ -206,7 +206,7 @@ void TellyMain::tick()
 #endif
 
 #ifdef _DEBUG
-    if (Serial.available() > 0)
+    if (Serial && Serial.available() > 0)
     {
         int ch = Serial.read();
         switch (ch)
