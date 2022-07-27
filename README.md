@@ -33,20 +33,20 @@ ADXL345 && MPU9250 are connected to the default I2C port.
 
 ### ({Alt}|{Azi}) buttons
 
-- .BAz +- azimuth control
-- .BAlt +- altitude control
+- Azi button =>  +- azimuth control
+- Alt button =>   +- altitude control
 
-- .BAlt press: stop motion / cancel finder
-- .BAzi press: stop motion / cancel finder
+- Alt button =>  press: stop motion / cancel finder
+- Azi button =>  press: stop motion / cancel finder
 
-- .BAlt dbl: attach on/off (fb?)
-- .BAzi dbl: tracking on/off (feedback?)
+- Alt button =>  dbl: attach on/off (fb?)
+- Azi button =>  dbl: tracking on/off (feedback?)
 
-- .BAlt push + enc: speed rate+-
-- .BAzi push + enc: -
+- Alt button =>  push + enc: speed rate+-
+- Azi button =>  push + enc: -
 
-- .BAzi push + BAlt push: spiral move finder until any button clicked
-- .BAlt push + BAzi push: spiral move finder until any button clicked
+- Azi button =>  long push + Alt button push: spiral move finder until any button clicked
+- Alt button =>  long push + Azi button push: spiral move finder until any button clicked
 
 ### Boot:
 .Both pressed: compass + (base tilt?) calibration
