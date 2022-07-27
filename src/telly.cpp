@@ -20,7 +20,7 @@
 void TellyMain::stopMotion()
 {
     chassis.stop();
-    telescope.stFlew();
+    telescope.stopSlew();
     actualState = Normal;
 }
 
@@ -61,9 +61,12 @@ void TellyMain::setup()
     double alt = telescope.astro.getAltitude();
     double azi = telescope.astro.getAzimuth();
 #ifdef __ACCEL
-    DEBUG3("Initial tilt:", getTilt(), 4);
-    alt = TILT();
-    DEBUG3LN("\tReal tilt:", alt, 6);
+    if (accelInitied)
+    {
+        DEBUG3("Initial tilt:", getTilt(), 4);
+        alt = TILT();
+        DEBUG3LN("\tReal tilt:", alt, 6);
+    }
 #endif
 #ifdef __MAGNETO
     tickMPU9250();
@@ -97,7 +100,10 @@ void TellyMain::setup()
         {
             DEBUGLN("To the top");
 #ifdef __ACCEL
-            actualState = MovingToTop;
+            if (accelInitied)
+            {
+                actualState = MovingToTop;
+            }
 #endif // __MAGNETO
         }
     }
@@ -108,7 +114,10 @@ void TellyMain::setup()
             DEBUGLN("Move to north pole");
 #ifdef __MAGNETO
 #ifdef __ACCEL
-            actualState = MovingToNorthPole;
+            if (accelInitied)
+            {
+                actualState = MovingToNorthPole;
+            }
 #endif // __ACCEL
 #endif // __MAGNETO
         }
@@ -129,8 +138,11 @@ void TellyMain::setup()
     {
         DEBUGLN("Going to top");
 #ifdef __ACCEL
-        DEBUG4LN("Top is:", alt, chassis.getAziCurrent(), 4);
-        chassis.gotoAltAzi(90, chassis.getAziCurrent());
+        if (accelInitied)
+        {
+            DEBUG4LN("Top is:", alt, chassis.getAziCurrent(), 4);
+            chassis.gotoAltAzi(90, chassis.getAziCurrent());
+        }
 #endif
         actualState = Normal;
     }
@@ -195,6 +207,7 @@ void TellyMain::tick()
 #ifdef __ACCEL
     // DEBUG("Tilt:");
     // DEBUG2LN(TILT(),2);
+    if (accelInitied)
     {
         float tilt = TILT();
         if (tilt < 0)
@@ -277,8 +290,11 @@ void TellyMain::tick()
             DEBUG3LN(",z=", getMPU9250().az, 6);
 #endif // __MAGNETO
 #ifdef __ACCEL
-            DEBUG(" Tilt:");
-            DEBUG2LN(TILT(), 2);
+            if (accelInitied)
+            {
+                DEBUG(" Tilt:");
+                DEBUG2LN(TILT(), 2);
+            }
 #endif // __ACCEL
 
             DEBUG4(" y m d h m s ", year(telescope.astro.getCurrentTime()), month(telescope.astro.getCurrentTime()), DEC);
