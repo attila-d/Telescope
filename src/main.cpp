@@ -55,7 +55,8 @@ void setup()
                        {
             switch (telly.actualState) {
                 case Normal:
-                    if (handwheel.isAziPressed())  // AZI, the other button
+                    // if (handwheel.isAziPressed())  // AZI, the other button
+                    if (handwheel.btnAzi.isLongPressed())  // AZI, the other button
                     {
                         telly.startSpiral();
                     } else {
@@ -79,7 +80,8 @@ void setup()
                        {
             switch (telly.actualState) {
                 case Normal:
-                    if (handwheel.isAltPressed())  // ALT, the other button
+                    // if (handwheel.isAltPressed())  // ALT, the other button
+                    if (handwheel.btnAlt.isLongPressed())  // ALT, the other button
                     {
                         telly.startSpiral();
                     } else {

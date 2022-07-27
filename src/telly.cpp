@@ -26,6 +26,7 @@ void TellyMain::stopMotion()
 
 void TellyMain::startSpiral()
 {
+    DEBUGLN("Starting spiral");
     actualState = Spiral00;
     spiralFactor = 1.;
     chassis.stepAlt.move(0.5 * stepSize * spiralFactor / 8);
