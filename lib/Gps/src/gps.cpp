@@ -8,7 +8,7 @@
 #include <TinyGPS.h>
 
 /**
- * 
+ *
  $GPGGA,181908.00,3404.7041778,N,07044.3966270,W,4,13,1.00,495.144,M,29.200,M,0.10,0000*40
 All NMEA messages start with the $ character, and each data field is separated by a comma.
 GP represent that it is a GPS position (GL would denote GLONASS).
@@ -86,11 +86,16 @@ float getGpsLon()
     return lon;
 }
 
+/**
+ * @brief Get the Gps Date Time object
+ *
+ * @return time_t in seconds
+ */
 time_t getGpsDateTime()
 {
     int year;
-    byte month, day, hour,minute, second, hundredths;
-    myTinyGPS.crack_datetime(&year,&month, &day,&hour,&minute,&second,&hundredths,NULL);
+    byte month, day, hour, minute, second, hundredths;
+    myTinyGPS.crack_datetime(&year, &month, &day, &hour, &minute, &second, &hundredths, NULL);
     tmElements_t tmSet;
     tmSet.Year = year;
     tmSet.Month = month;
@@ -101,11 +106,12 @@ time_t getGpsDateTime()
     return makeTime(tmSet);
 }
 
-bool isGpsFix() {
+bool isGpsFix()
+{
     return GPSfix;
 }
 
-
-int getGpsSatellites() {
+int getGpsSatellites()
+{
     return (int)myTinyGPS.satellites();
 }

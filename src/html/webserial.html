@@ -1,124 +1,145 @@
 <!doctype html>
 <html lang="en" class="fontawesome-i2svg-active fontawesome-i2svg-complete">
-    <head>
-        <!-- Required meta tags -->
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="description" content="Web Serial API, telescope control view bluetooth">
-        <meta name="author" content="Dpbymqn">
-        <!-- <link rel="icon" href="images/Deep_Favicon.png"> -->
-        <title>Telescope controller</title>
 
-        <!-- Font Awesome CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-              integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    </head>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Web Serial API, telescope control view bluetooth">
+    <meta name="author" content="Dpbymqn">
+    <!-- <link rel="icon" href="images/Deep_Favicon.png"> -->
+    <title>Telescope controller</title>
 
-    <body id=about style="font-family: sans-serif;"  class="bg-light">
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
 
-        <div class="container">
-            <div class="py-5 text-center">
-                <img class="d-block mx-auto mb-4" src="https://getbootstrap.com/docs/4.0/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-                <h2>Telescope2 control</h2>
-                <p class="lead">Below is an example form built entirely with Bootstrap's form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.</p>
-            </div>
+<body id=about style="font-family: sans-serif;" class="bg-light">
 
-            <div class="row">
-                <div class="col-sm">
-                    <button type="submit" class="btn btn-secondary" id="openPort">Open</button>
-                </div>
-                <div class="col-sm">
-                    <button type="submit" class="btn btn-secondary" onclick="window.nexstarSend(['z'.charCodeAt(0)]);">Get ALT/AZM</button>
-                </div>
-                <div class="col-sm">
-                    <button type="submit" class="btn btn-secondary" onclick="window.nexstarSend(['e'.charCodeAt(0)]);">Get RA/DEC</button>
-                </div>
+    <div class="container">
+        <div class="py-5 text-center">
+            <img class="d-block mx-auto mb-4" src="https://getbootstrap.com/docs/4.0/assets/brand/bootstrap-solid.svg"
+                alt="" width="72" height="72">
+            <h2>Telescope2 control</h2>
+            <p class="lead">Below is an example form built entirely with Bootstrap's form controls. Each required form
+                group has a validation state that can be triggered by attempting to submit the form without completing
+                it.</p>
+        </div>
+
+        <div class="row">
+            <div class="col-sm">
+                <button type="submit" class="btn btn-secondary" id="openPort">Open</button>
             </div>
-            <div class="row">
-                <div class="col-sm">
-                    <button type="submit" class="btn btn-secondary" onclick="window.nexstarSend(['t'.charCodeAt(0)]);">Tracking mode</button>
-                </div>
-                <div class="col-sm">
-                    <button type="submit" class="btn btn-secondary" onclick="window.nexstarSend(['w'.charCodeAt(0)]);">Get location</button>
-                </div>
-                <div class="col-sm">
-                    <button type="submit" class="btn btn-secondary" onclick="window.nexstarSend(['h'.charCodeAt(0)]);">Get time</button>
-                </div>
+            <div class="col-sm">
+                <button type="submit" class="btn btn-secondary" onclick="window.nexstarSend(['z'.charCodeAt(0)]);">Get
+                    ALT/AZM</button>
             </div>
-            <div class="row">
-                <div class="col-sm">
-                    <button type="submit" class="btn btn-secondary" onclick="window.nexstarSend(['V'.charCodeAt(0)]);">Get version</button>
-                </div>
-                <div class="col-sm">
-                    <button type="submit" class="btn btn-secondary" onclick="window.nexstarSend(['m'.charCodeAt(0)]);">Get model</button>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm">
-                    <button type="submit" class="btn btn-secondary" onclick="window.nexstarSend(['J'.charCodeAt(0)]);">Get alignment</button>
-                </div>
-                <div class="col-sm">
-                    <button type="submit" class="btn btn-secondary" onclick="window.nexstarSend(['L'.charCodeAt(0)]);">Get goto</button>
-                </div>
-                <div class="col-sm">
-                    <button type="submit" class="btn btn-secondary" onclick="window.nexstarSend(['M'.charCodeAt(0)]);">Cancel goto</button>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm">
-                    <button type="submit" class="btn btn-secondary" onclick="window.nexstarSend(['H'.charCodeAt(0),0x12,0x38,0x36,0x08,0x0d,0x15,0x02,0x00]);">Set time</button>
-                </div>
-            </div>
-            <div class="row">
-                <label for="response">Response</label>
-                <textarea  class="form-control" id="response" cols="40" rows="5" readonly></textarea>
-                <div class="invalid-feedback">
-                    Here comes the response
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm">
-                </div>
-                <div class="col-sm">
-                    <button type="submit" class="btn btn-secondary" onclick="window.altitude += 15;window.gotoAltAzi();" >Alt +</button>
-                </div>
-                <div class="col-sm">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm">
-                    <button type="submit" class="btn btn-secondary" onclick="window.azimuth += 15;window.gotoAltAzi();" >Azimuth -</button>
-                </div>
-                <div class="col-sm">
-                </div>
-                <div class="col-sm">
-                    <button type="submit" class="btn btn-secondary" onclick="window.azimuth -= 15;window.gotoAltAzi();" >Azimuth +</button>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm">
-                </div>
-                <div class="col-sm">
-                    <button type="submit" class="btn btn-secondary" onclick="window.altitude -= 15;window.gotoAltAzi();" >Alt -</button>
-                </div>
-                <div class="col-sm">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm">
-                    <button type="submit" class="btn btn-secondary" >Pos1</button>
-                </div>
-                <div class="col-sm">
-                    <button type="submit" class="btn btn-secondary" >Pos2</button>
-                </div>
-                <div class="col-sm">
-                    <button type="submit" class="btn btn-secondary" >Pos3</button>
-                </div>
+            <div class="col-sm">
+                <button type="submit" class="btn btn-secondary" onclick="window.nexstarSend(['e'.charCodeAt(0)]);">Get
+                    RA/DEC</button>
             </div>
         </div>
-    </body>
+        <div class="row">
+            <div class="col-sm">
+                <button type="submit" class="btn btn-secondary"
+                    onclick="window.nexstarSend(['t'.charCodeAt(0)]);">Tracking mode</button>
+            </div>
+            <div class="col-sm">
+                <button type="submit" class="btn btn-secondary" onclick="window.nexstarSend(['w'.charCodeAt(0)]);">Get
+                    location</button>
+            </div>
+            <div class="col-sm">
+                <button type="submit" class="btn btn-secondary" onclick="window.nexstarSend(['h'.charCodeAt(0)]);">Get
+                    time</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm">
+                <button type="submit" class="btn btn-secondary" onclick="window.nexstarSend(['V'.charCodeAt(0)]);">Get
+                    version</button>
+            </div>
+            <div class="col-sm">
+                <button type="submit" class="btn btn-secondary" onclick="window.nexstarSend(['m'.charCodeAt(0)]);">Get
+                    model</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm">
+                <button type="submit" class="btn btn-secondary" onclick="window.nexstarSend(['J'.charCodeAt(0)]);">Get
+                    alignment</button>
+            </div>
+            <div class="col-sm">
+                <button type="submit" class="btn btn-secondary" onclick="window.nexstarSend(['L'.charCodeAt(0)]);">Get
+                    goto</button>
+            </div>
+            <div class="col-sm">
+                <button type="submit" class="btn btn-secondary"
+                    onclick="window.nexstarSend(['M'.charCodeAt(0)]);">Cancel goto</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm">
+                <button type="submit" class="btn btn-secondary"
+                    onclick="window.nexstarSend(['H'.charCodeAt(0),0x12,0x38,0x36,0x08,0x0d,0x15,0x02,0x00]);">Set
+                    time</button>
+            </div>
+        </div>
+        <div class="row">
+            <label for="response">Response</label>
+            <textarea class="form-control" id="response" cols="40" rows="5" readonly></textarea>
+            <div class="invalid-feedback">
+                Here comes the response
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm">
+            </div>
+            <div class="col-sm">
+                <button type="submit" class="btn btn-secondary" onclick="window.altitude += 15;window.gotoAltAzi();">Alt
+                    +</button>
+            </div>
+            <div class="col-sm">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm">
+                <button type="submit" class="btn btn-secondary"
+                    onclick="window.azimuth += 15;window.gotoAltAzi();">Azimuth -</button>
+            </div>
+            <div class="col-sm">
+            </div>
+            <div class="col-sm">
+                <button type="submit" class="btn btn-secondary"
+                    onclick="window.azimuth -= 15;window.gotoAltAzi();">Azimuth +</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm">
+            </div>
+            <div class="col-sm">
+                <button type="submit" class="btn btn-secondary" onclick="window.altitude -= 15;window.gotoAltAzi();">Alt
+                    -</button>
+            </div>
+            <div class="col-sm">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm">
+                <button type="submit" class="btn btn-secondary">Pos1</button>
+            </div>
+            <div class="col-sm">
+                <button type="submit" class="btn btn-secondary">Pos2</button>
+            </div>
+            <div class="col-sm">
+                <button type="submit" class="btn btn-secondary">Pos3</button>
+            </div>
+        </div>
+    </div>
+</body>
+
 </html>
 
 
@@ -127,109 +148,109 @@
 <!-- jQuery first, then Popper.js, then Bootstrap JS, then Fontawesome, and then custom JS scripts -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-crossorigin="anonymous"></script>
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-crossorigin="anonymous"></script>
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
 <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
 <!-- <script src="js/smooth_scrolling.js"></script> -->
 
 <script>
 
-                        var port;
-                        var writer;
-                        var reader;
+    var port;
+    var writer;
+    var reader;
 
-                        var azimuth = 19.;
-                        var altitude = 47.5;
-                        var step = 30.;
+    var azimuth = 19.;
+    var altitude = 47.5;
+    var step = 30.;
 
-                        async function nexstarSend(data) {
-                            response.value = "";
-                            console.log(new Uint8Array(data));
+    async function nexstarSend(data) {
+        response.value = "";
+        console.log(new Uint8Array(data));
 
-                            await writer.write(new Uint8Array(data));
+        await writer.write(new Uint8Array(data));
+    }
+
+    function gotoAltAzi() {
+        var altHex = ('00000000' + Math.round((altitude * 4294967296) / 360).toString(16).toUpperCase()).slice(-8);
+        var aziHex = ('00000000' + Math.round((azimuth * 4294967296) / 360).toString(16).toUpperCase()).slice(-8);
+        console.log(altitude, (altitude * 4294967296) / 360, azimuth, (azimuth * 4294967296) / 360, altHex, aziHex);
+
+        nexstarSend(['b'.charCodeAt(0),
+        altHex.charCodeAt(0),
+        altHex.charCodeAt(1),
+        altHex.charCodeAt(2),
+        altHex.charCodeAt(3),
+        altHex.charCodeAt(4),
+        altHex.charCodeAt(5),
+        altHex.charCodeAt(6),
+        altHex.charCodeAt(7),
+        ','.charCodeAt(0),
+        aziHex.charCodeAt(0),
+        aziHex.charCodeAt(1),
+        aziHex.charCodeAt(2),
+        aziHex.charCodeAt(3),
+        aziHex.charCodeAt(4),
+        aziHex.charCodeAt(5),
+        aziHex.charCodeAt(6),
+        aziHex.charCodeAt(7)
+        ]);
+    }
+
+    // Start function
+
+    $(document).off('.data-api');
+    if ("serial" in navigator) {
+        //alert("Serial API is OK.");
+        console.log("Serial API is OK.")
+        response.value = "Serial API is OK";
+    } else {
+        alert("Serial API is not supported in browser.");
+    }
+    $('#commport').change(function () {
+        alert($(this).val());
+    });
+
+    $('#openPort').click(async function () {
+        port = await navigator.serial.requestPort();
+        // - Wait for the port to open.
+        await port.open({ baudRate: 115200 });
+        writer = port.writable.getWriter();
+
+        const data = new Uint8Array([101]); // hello
+        await writer.write(data);
+
+        while (port.readable) {
+            reader = port.readable.getReader();
+
+            try {
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) {
+                        // Allow the serial port to be closed later.
+                        reader.releaseLock();
+                        break;
+                    }
+                    if (value) {
+                        console.log(value);
+                        if (value instanceof Uint8Array) {
+                            value.forEach(e => {
+                                response.value += String.fromCharCode(e);
+                            });
+                            response.value += "\t";
+                            value.forEach(e => {
+                                response.value += "[" + e.toString(16) + "] ";
+                            });
+                            response.value += "\r\n";
                         }
+                    }
+                }
+            } catch (error) {
+                // TODO: Handle non-fatal read error.
+            }
+        }
 
-                        function gotoAltAzi() {
-                            var altHex = ('00000000' + Math.round((altitude * 4294967296) / 360).toString(16).toUpperCase()).slice(-8);
-                            var aziHex = ('00000000' + Math.round((azimuth * 4294967296) / 360).toString(16).toUpperCase()).slice(-8);
-                            console.log(altitude, (altitude * 4294967296) / 360, azimuth, (azimuth * 4294967296) / 360,altHex,aziHex);
-
-                            nexstarSend(['b'.charCodeAt(0),
-                                altHex.charCodeAt(0),
-                                altHex.charCodeAt(1),
-                                altHex.charCodeAt(2),
-                                altHex.charCodeAt(3),
-                                altHex.charCodeAt(4),
-                                altHex.charCodeAt(5),
-                                altHex.charCodeAt(6),
-                                altHex.charCodeAt(7),
-                                ','.charCodeAt(0),
-                                aziHex.charCodeAt(0),
-                                aziHex.charCodeAt(1),
-                                aziHex.charCodeAt(2),
-                                aziHex.charCodeAt(3),
-                                aziHex.charCodeAt(4),
-                                aziHex.charCodeAt(5),
-                                aziHex.charCodeAt(6),
-                                aziHex.charCodeAt(7)
-                            ]);
-                        }
-
-                        // Start function
-
-                        $(document).off('.data-api');
-                        if ("serial" in navigator) {
-                            //alert("Serial API is OK.");
-                            console.log("Serial API is OK.")
-                            response.value = "Serial API is OK";
-                        } else {
-                            alert("Serial API is not supported in browser.");
-                        }
-                        $('#commport').change(function () {
-                            alert($(this).val());
-                        });
-
-                        $('#openPort').click(async function () {
-                            port = await navigator.serial.requestPort();
-                            // - Wait for the port to open.
-                            await port.open({baudRate: 9600});
-                            writer = port.writable.getWriter();
-
-                            const data = new Uint8Array([101]); // hello
-                            await writer.write(data);
-
-                            while (port.readable) {
-                                reader = port.readable.getReader();
-
-                                try {
-                                    while (true) {
-                                        const {value, done} = await reader.read();
-                                        if (done) {
-                                            // Allow the serial port to be closed later.
-                                            reader.releaseLock();
-                                            break;
-                                        }
-                                        if (value) {
-                                            console.log(value);
-                                            if (value instanceof  Uint8Array) {
-                                                value.forEach(e => {
-                                                    response.value += String.fromCharCode(e);
-                                                });
-                                                response.value += "\t";
-                                                value.forEach(e => {
-                                                    response.value += "[" + e.toString(16) + "] ";
-                                                });
-                                                response.value += "\r\n";
-                                            }
-                                        }
-                                    }
-                                } catch (error) {
-                                    // TODO: Handle non-fatal read error.
-                                }
-                            }
-
-                        });
+    });
 </script>

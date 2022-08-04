@@ -1,16 +1,29 @@
 #include <Arduino.h>
 #include <unity.h>
 
-#include "main.h"
+#include <AccelStepper.h>
+#include <OneButton.h>
+#include <RotaryEncoder.h>
 
+#include "chassis.h"
+#include "compass.h"
+#include "handwheel.h"
+#include "nexstar.h"
+#include "telescope.h"
+#include "tilt.h"
+#include "util.h"
+// #include "gps.h"
+#include "bt.h"
+#include "telly.h"
 
 extern TellyMain telly;
 
-void setUp() {
+void setUp()
+{
 }
 
-void tearDown() {
-
+void tearDown()
+{
 }
 
 void test_led_builtin_pin_number(void)

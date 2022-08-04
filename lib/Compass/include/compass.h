@@ -11,6 +11,8 @@ float getNorth();
 
 #ifdef __MAGNETO
 
+extern bool compassInited;
+
 // north offset comes from the difference of the mounted magnetometer north and chassis north axis
 #define NORTH_OFFSET 92
 #define NORTH() dRange(360 - (getNorth() - NORTH_OFFSET), -180., 180.)

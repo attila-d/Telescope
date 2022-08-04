@@ -34,8 +34,6 @@ void TellyMain::startSpiral()
 
 void TellyMain::setup()
 {
-    pinMode(LED_BUILTIN, OUTPUT);
-    Serial.begin(9600);
 #ifdef _DEBUG
     DEBUG("Starting...");
     // DEBUG("Loop size in steps:");
@@ -194,7 +192,7 @@ void TellyMain::tick()
             DEBUG3(", time=", tm, DEC);
             DEBUGLN("!");
             setLatLong(lat, lon);
-            telescope.setCurrentTime(tm);
+            telescope.setCurrentTime(tm); // in seconds
             saveLatLonToEEPROM(lat, lon);
         }
     }
@@ -297,18 +295,23 @@ void TellyMain::tick()
                 DEBUG2LN(TILT(), 2);
             }
 #endif // __ACCEL
+            {
+                time_t t = (time_t)(telescope.astro.getCurrentTime());
 
-            DEBUG4(" y m d h m s ", year(telescope.astro.getCurrentTime()), month(telescope.astro.getCurrentTime()), DEC);
-            DEBUG4(",", day(telescope.astro.getCurrentTime()), hour(telescope.astro.getCurrentTime()), DEC);
-            DEBUG4(",", minute(telescope.astro.getCurrentTime()), second(telescope.astro.getCurrentTime()), DEC);
-            DEBUG3(" sid ", telescope.astro.getLocalSiderealTime(), 6);
-
+                DEBUG4(" y m d h m s ", year(t), month(t), DEC);
+                DEBUG4(",", day(t), hour(t), DEC);
+                DEBUG4(",", minute(t), second(t), DEC);
+                DEBUG3(" sid ", telescope.astro.getLocalSiderealTime(), 6);
+            }
             DEBUGLN();
 
             break;
         case 'n':
             // go to northpole (appx.)
             chassis.gotoAltAzi(45., 0.);
+            break;
+        case 't':
+            DEBUG4LN("Local sidereal time:", telescope.astro.getLocalSiderealTime(), telescope.astro.getCurrentTime(), DEC);
             break;
         default:
             if (ch <= '9' && ch >= '0')

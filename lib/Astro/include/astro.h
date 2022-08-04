@@ -5,9 +5,9 @@
 
 /**
  * Astronomy calculations
- * 
+ *
  * Holds local position (GPS Long/Lat, time)
- * 
+ *
  * sets and reads current direction in RADec / AltAzi
  */
 class MyAstro
@@ -33,7 +33,17 @@ public:
     double getLatDec(void);
     double getLongDec(void);
 
+    /**
+     * @brief Get the Current Time object
+     *
+     * @return unsigned long in second
+     */
     time_t getCurrentTime();
+    /**
+     * @brief Set the Current Time object
+     *
+     * @param currentTime in second
+     */
     void setCurrentTime(time_t currentTime);
 
 private:
@@ -71,5 +81,6 @@ private:
     const double FminusPIdiv2 = -M_PI_2;
     const double FPIdiv4 = M_PI_4;
 
-    long timeBase = 0;
+    long timeBase = 0;     // origin time, in second
+    double lastTime = 0.0; // last time RA/Dec was set. If local time is different from this, Alt/Azi must be recalculated (note EPSILON_TIME)
 };

@@ -82,9 +82,11 @@ public:
         // 1 = Alt/Az
         // 2 = EQ North
         // 3 = EQ South
-        DEBUGLN("getTrackingMode");
-        if (_tracking)
+        DEBUG4LN((isTracking() ? "getTrackingMode:ON" : "getTrackingMode:OFF"), trackRA, trackDEC, DEC);
+        if (isTracking())
+        {
             return 1;
+        }
         return 0;
     }
 
@@ -103,13 +105,19 @@ public:
 
     void gotoRaDec(double ra, double dec)
     {
-        astro.applyRAdec(ra, dec);
-        trackDEC = dec;
-        trackRA = ra;
-        // doRAdec2AltAz();
-        DEBUG4("GO TO RA/DEC:", ra, dec, 4);
-        DEBUG4LN(" Alt=", astro.getAltitude(), astro.getAzimuth(), 4);
-        chassis.gotoAltAzi(astro.getAltitude(), astro.getAzimuth());
+        if (!astro.applyRAdec(ra, dec))
+        {
+            DEBUGLN("RADec not updated");
+        }
+        else
+        {
+            trackDEC = dec;
+            trackRA = ra;
+            // doRAdec2AltAz();
+            DEBUG4("GO TO RA/DEC:", ra, dec, 4);
+            DEBUG4LN(" Alt=", astro.getAltitude(), astro.getAzimuth(), 4);
+            chassis.gotoAltAzi(astro.getAltitude(), astro.getAzimuth());
+        }
     }
 
     void syncCurrentPosToRaDec(double ra, double dec)

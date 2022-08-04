@@ -167,8 +167,8 @@ private:
         }
         break;
       case 'e': // Get precise RA/DEC, v1.6
-        DEBUG("GetPosition precise RA/DEC");
-        DEBUGLN();
+        // DEBUG("GetPosition precise RA/DEC");
+        // DEBUGLN();
         // “34AB0500,12CE0500#”
         {
           telescope.updateChassis();
@@ -525,7 +525,7 @@ private:
         DEBUG("Current time is ");
         DEBUG2(t, DEC);
         DEBUG(" relative: ");
-        DEBUG2(t * 1000 - millis(), DEC);
+        DEBUG2(t - millis(), DEC);
         DEBUGLN();
         if (useDST)
         {
@@ -554,14 +554,27 @@ private:
           GMToffset -= 256;
         }
         useDST = buffer[8];
-        // DEBUG("SetTime received1"); DEBUGLN();
         time_t t = makeTime(tm);
         if (useDST)
         {
           t -= 1 * 60 * 60;
         }
         t -= GMToffset * 60 * 60; // plus GMToffset hours;
-        telescope.astro.setCurrentTime(t);
+
+        DEBUG3LN("SetTime received:", t, DEC);
+
+        telescope.astro.setCurrentTime(t); // in seconds
+
+        // debug
+        {
+          time_t tt = (time_t)(telescope.astro.getCurrentTime());
+          DEBUG2(telescope.astro.getCurrentTime(), DEC);
+          DEBUG4(" y m d h m s ", year(tt), month(tt), DEC);
+          DEBUG4(",", day(tt), hour(tt), DEC);
+          DEBUG4(",", minute(tt), second(tt), DEC);
+          DEBUG3(" sid ", telescope.astro.getLocalSiderealTime(), 6);
+        }
+
         return respond();
       }
       break;

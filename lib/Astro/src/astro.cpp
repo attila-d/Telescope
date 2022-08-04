@@ -2,20 +2,33 @@
 
 #include "Arduino.h"
 #include "math.h"
+#include "debug.h"
 
+/**
+ * @brief seconds
+ *
+ * @return time_t
+ */
 time_t MyAstro::getCurrentTime()
 {
-    unsigned long l = (millis() / 1000) - timeBase;
+    unsigned long l = millis() / 1000 - timeBase;
     // DEBUG("get current time:");
     // DEBUG2LN(l, DEC);
     return l;
 }
 
+/**
+ * @brief seconds
+ *
+ * @param currentTime
+ */
 void MyAstro::setCurrentTime(time_t currentTime)
 {
-    // DEBUG("set current time:");
-    // DEBUG2LN(currentTime, DEC);
+    DEBUG3LN("set current time:", currentTime, DEC);
     timeBase = millis() / 1000 - currentTime;
+    // timeBase = currentTime - millis();
+
+    DEBUG3LN("timebase:", timeBase, DEC);
 }
 
 double MyAstro::inRange24(double d)
@@ -101,6 +114,13 @@ double MyAstro::getLongDec()
     return decLong;
 }
 
+/**
+ * @brief
+ *
+ * https://gist.github.com/privong/e830e8a16457f4efe7e6
+ *
+ * @return double in seconds?
+ */
 double MyAstro::getLocalSiderealTime()
 {
     time_t obstime = getCurrentTime();
@@ -179,13 +199,20 @@ bool MyAstro::applyAltAz(double Altitude, double Azimuth)
     return true;
 }
 
+#define EPSILON_TIME 1
+
 /**
  * Sets RA and Dec, and updates and calculates Alt/Azimuth
  */
 bool MyAstro::applyRAdec(double RightAscension, double Declination)
 {
-    if (RAdec == RightAscension && DeclinationDec == Declination)
-        return true; // Already done
+    double actTime = getLocalSiderealTime();
+    if (RAdec == RightAscension && DeclinationDec == Declination && abs(actTime - lastTime) < EPSILON_TIME)
+    {
+        DEBUG4LN("Time update:", actTime, lastTime, DEC);
+        return false; // Already done
+    }
+    lastTime = actTime;
     RAdec = RightAscension;
     RArad = deg2rad(RAdec) * 15.;
     sinRA = sin(RArad);
@@ -195,7 +222,7 @@ bool MyAstro::applyRAdec(double RightAscension, double Declination)
     sinDec = sin(DeclinationRad);
     cosDec = cos(DeclinationRad);
 
-    double HAdec = inRange24(getLocalSiderealTime() - RAdec);
+    double HAdec = inRange24(actTime - RAdec);
     double HArad = deg2rad(HAdec * 15.0);
     double cosHA = cos(HArad);
     double sinHA = sin(HArad);

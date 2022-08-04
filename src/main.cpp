@@ -46,6 +46,8 @@ void setup()
     // pinMode(23, OUTPUT);
     // pinMode(24, OUTPUT);
     // pinMode(25, OUTPUT);
+    pinMode(LED_BUILTIN, OUTPUT);
+    Serial.begin(115200);
 
     chassis.setup();
     handwheel.setup();
@@ -113,6 +115,11 @@ void setup()
         attachHandwheel = !attachHandwheel;
         DEBUG("Attaching telescope");
         DEBUGLN(attachHandwheel ? "ON" : "OFF"); });
+
+    // telly.telescope.astro.setCurrentTime(123123123);
+    // DEBUG2LN(telly.telescope.astro.getCurrentTime(), DEC);
+    // delay(2000);
+    // DEBUG2LN(telly.telescope.astro.getCurrentTime(), DEC);
 }
 
 void loop()
