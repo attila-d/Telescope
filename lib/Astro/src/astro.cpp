@@ -29,7 +29,7 @@ void MyAstro::setCurrentTime(unsigned long long currentTime)
     timeBase = (unsigned long long)millis() - currentTime;
     // timeBase = currentTime - millis();
 
-    DEBUG3LN("timebase:", (long)timeBase, DEC);
+    DEBUG4LN("timebase:", (long)(timeBase >> 32), (long)timeBase, DEC);
 }
 
 double MyAstro::inRange24(double d)
@@ -124,7 +124,7 @@ double MyAstro::getLongDec()
  */
 float MyAstro::getLocalSiderealTime()
 {
-    float64_t obstime = fp64_int64_to_float64(getCurrentTime());
+    float64_t obstime = fp64_div(fp64_int64_to_float64(getCurrentTime()), fp64_int32_to_float64(1000));
     float64_t d, t, GMST_s, LMST_s;
 
     d = fp64_add(fp64_div(obstime, fp64_int32_to_float64(86400)), fp64_sd(2440587.5 - 2451545.0));
