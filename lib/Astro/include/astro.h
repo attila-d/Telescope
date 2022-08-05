@@ -24,7 +24,7 @@ public:
     bool applyAltAz(double alt, double azi);
     bool applyRAdec(double ra, double dec);
 
-    double getLocalSiderealTime();
+    float getLocalSiderealTime();
 
     double getRAdec(void);
     double getDeclinationDec(void);

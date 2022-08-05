@@ -3,6 +3,7 @@
 #include "Arduino.h"
 #include "math.h"
 #include "debug.h"
+#include <fp64lib.h>
 
 /**
  * @brief seconds
@@ -121,31 +122,60 @@ double MyAstro::getLongDec()
  *
  * @return double in seconds?
  */
-double MyAstro::getLocalSiderealTime()
+float MyAstro::getLocalSiderealTime()
 {
-    time_t obstime = getCurrentTime();
-    double d, t, GMST_s, LMST_s;
+    unsigned long long obstime = getCurrentTime();
+    float64_t d, t, GMST_s, LMST_s;
 
-    d = (obstime / 86400.0) + 2440587.5 - 2451545.0;
-    t = d / 36525;
+    d = fp64_add(fp64_div(fp64_int32_to_float64(obstime), fp64_int32_to_float64(86400)), fp64_sd(2440587.5 - 2451545.0));
+    t = fp64_div(d, fp64_int32_to_float64(36525));
 
     // GMST_s = 24110.54841 + 8640184.812866 * t + 0.093104 * pow(t, 2) - 0.0000062 * pow(t, 3);
-    GMST_s = 24110.54841 + 8640184.812866 * t + 0.093104 * t * t - 0.0000062 * t * t * t;
+    GMST_s = fp64_add(fp64_add(fp64_sd(24110.54841),
+                               fp64_mul(fp64_sd(8640184.812866), t)),
+                      fp64_sub(fp64_mul(fp64_sd(0.093104), fp64_pow(t, fp64_sd(2.))),
+                               fp64_mul(fp64_sd(0.0000062), fp64_pow(t, fp64_sd(3.)))));
     /* convert from UT1=0 */
-    GMST_s += obstime;
-    GMST_s = GMST_s - 86400.0 * floor(GMST_s / 86400.0);
+    GMST_s = fp64_add(GMST_s, fp64_int32_to_float64(obstime));
+    GMST_s = fp64_sub(GMST_s, fp64_mul(fp64_int32_to_float64(86400), fp64_floor(fp64_div(GMST_s, fp64_int32_to_float64(86400)))));
 
     /* adjust to LMST */
-    LMST_s = GMST_s + 3600 * decLong / 15.;
+    LMST_s = fp64_add(GMST_s, fp64_mul(fp64_int32_to_float64(3600 / 15), fp64_sd(decLong)));
 
     if (LMST_s <= 0)
     { /* LMST is between 0 and 24h */
-        LMST_s += 86400.0;
+        LMST_s = fp64_add(LMST_s, fp64_int32_to_float64(86400));
     }
 
     // DEBUG3(" sid2 ", LMST_s / 3600., 6);
-    return LMST_s / 3600.;
+    return fp64_ds(fp64_div(LMST_s, fp64_int32_to_float64(3600)));
 }
+
+// double oldGetLocalSiderealTime()
+// {
+//     unsigned long long obstime = getCurrentTime();
+//     double d, t, GMST_s, LMST_s;
+
+//     d = (obstime / 86400.0) + 2440587.5 - 2451545.0;
+//     t = d / 36525.;
+
+//     // GMST_s = 24110.54841 + 8640184.812866 * t + 0.093104 * pow(t, 2) - 0.0000062 * pow(t, 3);
+//     GMST_s = 24110.54841 + 8640184.812866 * t + 0.093104 * t * t - 0.0000062 * t * t * t;
+//     /* convert from UT1=0 */
+//     GMST_s += obstime;
+//     GMST_s = GMST_s - 86400.0 * floor(GMST_s / 86400.0);
+
+//     /* adjust to LMST */
+//     LMST_s = GMST_s + 3600. * decLong / 15.;
+
+//     if (LMST_s <= 0)
+//     { /* LMST is between 0 and 24h */
+//         LMST_s += 86400.0;
+//     }
+
+//     // DEBUG3(" sid2 ", LMST_s / 3600., 6);
+//     return LMST_s / 3600.;
+// }
 
 bool MyAstro::setLatLong(double latitude, double longitude)
 {
@@ -199,7 +229,7 @@ bool MyAstro::applyAltAz(double Altitude, double Azimuth)
     return true;
 }
 
-#define EPSILON_TIME 1
+#define EPSILON_TIME (1. / 3600)
 
 /**
  * Sets RA and Dec, and updates and calculates Alt/Azimuth
