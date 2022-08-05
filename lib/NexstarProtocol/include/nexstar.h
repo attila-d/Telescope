@@ -521,7 +521,7 @@ private:
     case 'h': // Get Time
       if (cnt == 1)
       {
-        time_t t = telescope.astro.getCurrentTime();
+        time_t t = telescope.astro.getCurrentTime() / 1000;
         DEBUG("Current time is ");
         DEBUG2(t, DEC);
         DEBUG(" relative: ");
@@ -563,12 +563,12 @@ private:
 
         DEBUG3LN("SetTime received:", t, DEC);
 
-        telescope.astro.setCurrentTime(t); // in seconds
+        telescope.astro.setCurrentTime((unsigned long long)1000 * t); // in seconds
 
         // debug
         {
-          time_t tt = (time_t)(telescope.astro.getCurrentTime());
-          DEBUG2(telescope.astro.getCurrentTime(), DEC);
+          time_t tt = (time_t)(telescope.astro.getCurrentTime()) / 1000;
+          DEBUG2(tt, DEC);
           DEBUG4(" y m d h m s ", year(tt), month(tt), DEC);
           DEBUG4(",", day(tt), hour(tt), DEC);
           DEBUG4(",", minute(tt), second(tt), DEC);
@@ -672,21 +672,21 @@ private:
       {
         // Get Date x is month (1-12) y is day (1-31)
         // chr(x) & chr(y) & “#”
-        time_t t = telescope.astro.getCurrentTime();
+        time_t t = telescope.astro.getCurrentTime() / 1000;
         return respond(month(t), day(t));
       }
       if (buffer[3] == 4 && buffer[4] == 0 && buffer[5] == 0 && buffer[6] == 0 && buffer[7] == 2)
       {
         // Get Year (x * 256) + y = year
         // chr(x) & chr(y) & “#”
-        time_t t = telescope.astro.getCurrentTime();
+        time_t t = telescope.astro.getCurrentTime() / 1000;
         return respond(year(t) / 256, year(t) % 256);
       }
       if (buffer[3] == 51 && buffer[4] == 0 && buffer[5] == 0 && buffer[6] == 0 && buffer[7] == 3)
       {
         // Get Time  x is the hours y is the minutes z is the seconds
         // chr(x) & chr(y) & chr(z) &“#”
-        time_t t = telescope.astro.getCurrentTime();
+        time_t t = telescope.astro.getCurrentTime() / 1000;
         return respond(hour(t), minute(t), second(t));
       }
     }

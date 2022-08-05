@@ -38,13 +38,13 @@ public:
      *
      * @return unsigned long in second
      */
-    time_t getCurrentTime();
+    unsigned long long getCurrentTime();
     /**
      * @brief Set the Current Time object
      *
      * @param currentTime in second
      */
-    void setCurrentTime(time_t currentTime);
+    void setCurrentTime(unsigned long long currentTime);
 
 private:
     double decLat;
@@ -81,6 +81,6 @@ private:
     const double FminusPIdiv2 = -M_PI_2;
     const double FPIdiv4 = M_PI_4;
 
-    long timeBase = 0;     // origin time, in second
-    double lastTime = 0.0; // last time RA/Dec was set. If local time is different from this, Alt/Azi must be recalculated (note EPSILON_TIME)
+    unsigned long long timeBase = 0; // origin time, in second
+    double lastTime = 0.0;           // last time RA/Dec was set. If local time is different from this, Alt/Azi must be recalculated (note EPSILON_TIME)
 };

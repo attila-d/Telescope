@@ -68,6 +68,8 @@ public:
 
     void cancelGoto()
     {
+        chassis.stop();
+        stopSlew();
     }
 
     bool isGpsLinked()

@@ -10,9 +10,9 @@
  *
  * @return time_t
  */
-time_t MyAstro::getCurrentTime()
+unsigned long long MyAstro::getCurrentTime()
 {
-    unsigned long l = millis() / 1000 - timeBase;
+    unsigned long long l = (unsigned long long)millis() - timeBase;
     // DEBUG("get current time:");
     // DEBUG2LN(l, DEC);
     return l;
@@ -23,13 +23,13 @@ time_t MyAstro::getCurrentTime()
  *
  * @param currentTime
  */
-void MyAstro::setCurrentTime(time_t currentTime)
+void MyAstro::setCurrentTime(unsigned long long currentTime)
 {
-    DEBUG3LN("set current time:", currentTime, DEC);
-    timeBase = millis() / 1000 - currentTime;
+    DEBUG3LN("set current time:", (long)currentTime, DEC);
+    timeBase = (unsigned long long)millis() - currentTime;
     // timeBase = currentTime - millis();
 
-    DEBUG3LN("timebase:", timeBase, DEC);
+    DEBUG3LN("timebase:", (long)timeBase, DEC);
 }
 
 double MyAstro::inRange24(double d)
@@ -124,10 +124,10 @@ double MyAstro::getLongDec()
  */
 float MyAstro::getLocalSiderealTime()
 {
-    unsigned long long obstime = getCurrentTime();
+    float64_t obstime = fp64_int64_to_float64(getCurrentTime());
     float64_t d, t, GMST_s, LMST_s;
 
-    d = fp64_add(fp64_div(fp64_int32_to_float64(obstime), fp64_int32_to_float64(86400)), fp64_sd(2440587.5 - 2451545.0));
+    d = fp64_add(fp64_div(obstime, fp64_int32_to_float64(86400)), fp64_sd(2440587.5 - 2451545.0));
     t = fp64_div(d, fp64_int32_to_float64(36525));
 
     // GMST_s = 24110.54841 + 8640184.812866 * t + 0.093104 * pow(t, 2) - 0.0000062 * pow(t, 3);
@@ -136,7 +136,7 @@ float MyAstro::getLocalSiderealTime()
                       fp64_sub(fp64_mul(fp64_sd(0.093104), fp64_pow(t, fp64_sd(2.))),
                                fp64_mul(fp64_sd(0.0000062), fp64_pow(t, fp64_sd(3.)))));
     /* convert from UT1=0 */
-    GMST_s = fp64_add(GMST_s, fp64_int32_to_float64(obstime));
+    GMST_s = fp64_add(GMST_s, obstime);
     GMST_s = fp64_sub(GMST_s, fp64_mul(fp64_int32_to_float64(86400), fp64_floor(fp64_div(GMST_s, fp64_int32_to_float64(86400)))));
 
     /* adjust to LMST */

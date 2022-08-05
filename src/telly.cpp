@@ -296,7 +296,7 @@ void TellyMain::tick()
             }
 #endif // __ACCEL
             {
-                time_t t = (time_t)(telescope.astro.getCurrentTime());
+                time_t t = (time_t)(telescope.astro.getCurrentTime() / 1000);
 
                 DEBUG4(" y m d h m s ", year(t), month(t), DEC);
                 DEBUG4(",", day(t), hour(t), DEC);
@@ -311,7 +311,7 @@ void TellyMain::tick()
             chassis.gotoAltAzi(45., 0.);
             break;
         case 't':
-            DEBUG4LN("Local sidereal time:", telescope.astro.getLocalSiderealTime(), telescope.astro.getCurrentTime(), DEC);
+            DEBUG4LN("Local sidereal time:", telescope.astro.getLocalSiderealTime(), (long)telescope.astro.getCurrentTime(), DEC);
             break;
         default:
             if (ch <= '9' && ch >= '0')
