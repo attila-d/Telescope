@@ -19,7 +19,7 @@ void initADXL345()
         /* There was a problem detecting the ADXL345 ... check your connections */
         if (Serial)
         {
-            Serial.println("Ooops, no ADXL345 detecte");
+            Serial.println("Ooops, no ADXL345 detected");
         }
         // while (1)
         //     ;
