@@ -151,32 +151,6 @@ float MyAstro::getLocalSiderealTime()
     return fp64_ds(fp64_div(LMST_s, fp64_int32_to_float64(3600)));
 }
 
-// double oldGetLocalSiderealTime()
-// {
-//     unsigned long long obstime = getCurrentTime();
-//     double d, t, GMST_s, LMST_s;
-
-//     d = (obstime / 86400.0) + 2440587.5 - 2451545.0;
-//     t = d / 36525.;
-
-//     // GMST_s = 24110.54841 + 8640184.812866 * t + 0.093104 * pow(t, 2) - 0.0000062 * pow(t, 3);
-//     GMST_s = 24110.54841 + 8640184.812866 * t + 0.093104 * t * t - 0.0000062 * t * t * t;
-//     /* convert from UT1=0 */
-//     GMST_s += obstime;
-//     GMST_s = GMST_s - 86400.0 * floor(GMST_s / 86400.0);
-
-//     /* adjust to LMST */
-//     LMST_s = GMST_s + 3600. * decLong / 15.;
-
-//     if (LMST_s <= 0)
-//     { /* LMST is between 0 and 24h */
-//         LMST_s += 86400.0;
-//     }
-
-//     // DEBUG3(" sid2 ", LMST_s / 3600., 6);
-//     return LMST_s / 3600.;
-// }
-
 bool MyAstro::setLatLong(double latitude, double longitude)
 {
     // Input latitude and longitude are in decimal degrees
